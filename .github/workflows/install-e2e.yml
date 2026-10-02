@@ -72,6 +72,14 @@ jobs:
           fetch-tags: true
           sparse-checkout: scripts/sandbox/pick-release-tags.sh
           sparse-checkout-cone-mode: false
+      # Forks do not inherit release tags. The sandbox installs old releases
+      # from NousResearch/hermes-agent too, so use that same source here.
+      - name: Fetch upstream release tags on forks
+        if: github.event.repository.fork
+        run: |
+          git fetch --no-tags --filter=blob:none --depth=1 \
+            https://github.com/NousResearch/hermes-agent.git \
+            'refs/tags/v*:refs/tags/v*'
       - id: pick
         run: |
           set -euo pipefail
